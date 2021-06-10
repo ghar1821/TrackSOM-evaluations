@@ -1,4 +1,5 @@
-# CHANGE: setwd(), args, ClusteringCols
+# The script was run on a HPC platform where a PBS script equipped with
+# the hyperparameter values were sourced.
 
 # Import libraries
 library(TrackSOM)
@@ -16,7 +17,7 @@ data.files.fullpath <- sapply(data.files, function(fname) {
     full.fname <- paste(PrimaryDirectory, fname, sep="/")
 })
 
-# get command line args
+# get command line args. These can be read in from LHC samples
 args <- commandArgs(trailingOnly = TRUE)
 meta.max <- round(as.numeric(args[1]))
 meta.per.timepoint <- as.list(c(round(as.numeric(args[2])), round(as.numeric(args[3])), round(as.numeric(args[4])), round(as.numeric(args[5])), round(as.numeric(args[6]))))
