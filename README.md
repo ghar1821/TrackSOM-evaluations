@@ -4,7 +4,7 @@ This repository contains scripts to reproduce the evaluations, tables, and figur
 1. Our paper which introduces the ``TrackSOM`` algorithm.
 2. The COVID-19 paper which uses ``TrackSOM`` to profile acute and convalescence COVID-19 samples. 
 
-[TrackSOM](https://github.com/ghar1821/TrackSOM)is a clustering and temporal cluster tracking algorithm for clustering and tracking cellular populationchanges in time- and disease-course cytometry data.
+[TrackSOM](https://github.com/ghar1821/TrackSOM) is a clustering and temporal cluster tracking algorithm for clustering and tracking cellular populationchanges in time- and disease-course cytometry data.
 
 Please cite the following preprint if you find TrackSOM useful in your research.
 ```
@@ -26,7 +26,7 @@ The preprint titled **TrackSOM: mapping immune response dynamics through sequent
 
 ## TrackSOM paper
 
-The scripts are stored in `tracksom_paper` directory and organised according to the datasets: `synthetic_dataset`, `wnv_bm_dataset`, and `wnv_cns_dataset`.
+The scripts are stored in [`tracksom_paper`](https://github.com/ghar1821/TrackSOM-evaluations/tree/main/tracksom_paper) directory and organised according to the datasets: `synthetic_dataset`, `wnv_bm_dataset`, and `wnv_cns_dataset`.
 
 The raw dataset can be downloaded from the Open Science Framework portal: https://osf.io/8dvzu/
 
