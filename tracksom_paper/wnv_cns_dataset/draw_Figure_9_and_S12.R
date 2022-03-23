@@ -2,9 +2,11 @@ library(data.table)
 library(Spectre)
 library(stringr)
 library(scales)
-library(TrackSOM)
+library(RColorBrewer)
+library(ggplot2)
 
-work_dir <- "~/Dropbox (Sydney Uni)/tracksom/wnv_cns/clustered_10x10_pv/"
+# work_dir <- "~/Dropbox (Sydney Uni)/tracksom/wnv_cns/clustered_10x10_pv/"
+work_dir <- "~/Documents/TrackSOM/wnv_cns/"
 setwd(work_dir)
 
 dat <- fread("res_10x10_pv.csv")
@@ -39,45 +41,41 @@ cnt_all <- cnt_all[!is.na(cnt_all$Population),]
 cnt_all[, proportion:=cnt_pop_grp/cnt_grp]
 
 pops <- unique(cnt_all$Population)
-for (p in pops[c(1,2,3,6)]) {
+
+for (p in pops) {
     cnt_all_p <- cnt_all[cnt_all$Population == p,]
-    make.autograph(
+    setnames(cnt_all_p, 'Group', 'Disease severity')
+    plt <- Spectre::make.autograph(
         dat = cnt_all_p,
-        x.axis = "Group",
+        x.axis = 'Disease severity',
         y.axis = "proportion",
         y.axis.label = "Proportion of cells",
-        x.axis.label = "Disease severity",
-        colour.by = "Group",
+        colour.by = "Disease severity",
         colours = c("yellow1", "gold1", "orange2", "darkorange2", "red1", "red4"),
         title = p,
-        filename = paste0("proportion_", p, ".pdf"),
         violin = FALSE,
         dot.size = 4,
-        max.y = 1.1,
-        max.y.value = NULL
+        max.y = 1.6)
+    plt <- plt + ggplot2::scale_y_continuous(breaks = scales::pretty_breaks(n =10))
+    
+    # Stat test
+    plt <- plt + stat_compare_means(comparisons =  list(
+        c('Mock', 'WNV-01'),
+        c('Mock', 'WNV-02'),
+        c('Mock', 'WNV-03'),
+        c('Mock', 'WNV-04'),
+        c('Mock', 'WNV-05')
+    ), method = "wilcox.test",
+    # symnum.args = list(cutpoints = c(0, 0.0001, 0.001, 0.01, 0.05, 1), symbols = c("****", "***", "**", "*", "ns"))
     )
+    plt <- plt + stat_compare_means(method = 'anova')
+    
+    ggplot2::ggsave(paste0("proportion_", p, ".pdf"), plot = plt, width = 5, height = 5)
 }
 
-for (p in pops[c(4,5)]) {
-    cnt_all_p <- cnt_all[cnt_all$Population == p,]
-    make.autograph(
-        dat = cnt_all_p,
-        x.axis = "Group",
-        y.axis = "proportion",
-        y.axis.label = "Proportion of cells",
-        x.axis.label = "Disease severity",
-        colour.by = "Group",
-        colours = c("yellow1", "gold1", "orange2", "darkorange2", "red1", "red4"),
-        title = p,
-        filename = paste0("proportion_", p, ".pdf"),
-        violin = FALSE,
-        dot.size = 4,
-        max.y = 1.0,
-        max.y.value = 1.0
-    )
-}
 
 # draw count divided by number of mice
+# Note 1 sample per mouse
 cnt_sample <- unique(cnt_all[, c("Sample", "Group")])
 cnt_sample <- cnt_sample[, .(cnt_samp = .N), by='Group']
 cnt_all <- merge(cnt_all, cnt_sample, by='Group')
@@ -85,20 +83,32 @@ cnt_all[, abs_cnt_div := cnt_pop_grp / cnt_samp]
 
 for (p in pops) {
     cnt_all_p <- cnt_all[cnt_all$Population == p,]
-    make.autograph(
+    setnames(cnt_all_p, 'Group', 'Disease severity')
+    plt <- Spectre::make.autograph(
         dat = cnt_all_p,
-        x.axis = "Group",
+        x.axis = "Disease severity",
         y.axis = "abs_cnt_div",
         y.axis.label = "Count of cells divided by number of mice",
-        x.axis.label = "Disease severity",
-        colour.by = "Group",
+        colour.by = "Disease severity",
         colours = c("yellow1", "gold1", "orange2", "darkorange2", "red1", "red4"),
         title = p,
-        filename = paste0("count_", p, ".pdf"),
         violin = FALSE,
         dot.size = 4,
-        max.y = 1.1,
-        max.y.value = NULL
+        max.y = 1.6
     )
+    plt <- plt + ggplot2::scale_y_continuous(breaks = scales::pretty_breaks(n =10), label=scales::comma)
+    
+    # Stat test
+    plt <- plt + stat_compare_means(comparisons =  list(
+        c('Mock', 'WNV-01'),
+        c('Mock', 'WNV-02'),
+        c('Mock', 'WNV-03'),
+        c('Mock', 'WNV-04'),
+        c('Mock', 'WNV-05')
+    ), method = "wilcox.test", 
+    symnum.args = list(cutpoints = c(0, 0.0001, 0.001, 0.01, 0.05, 1), symbols = c("****", "***", "**", "*", "ns"))
+    )
+    
+    ggplot2::ggsave(paste0("cnt_", p, ".pdf"), plot = plt, width = 5, height = 5)
 }
 
